@@ -1,0 +1,117 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "San Juan Metro" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-66.15, 18.45],
+          [-66.05, 18.45],
+          [-66.05, 18.3],
+          [-66.15, 18.3],
+          [-66.15, 18.45]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bayamón" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-66.25, 18.45],
+          [-66.15, 18.45],
+          [-66.15, 18.35],
+          [-66.25, 18.35],
+          [-66.25, 18.45]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Carolina" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-66.05, 18.45],
+          [-65.95, 18.45],
+          [-65.95, 18.3],
+          [-66.05, 18.3],
+          [-66.05, 18.45]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Caguas" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-66.15, 18.3],
+          [-66.0, 18.3],
+          [-66.0, 18.15],
+          [-66.15, 18.15],
+          [-66.15, 18.3]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ponce" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-66.75, 18.1],
+          [-66.5, 18.1],
+          [-66.5, 17.9],
+          [-66.75, 17.9],
+          [-66.75, 18.1]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mayagüez" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-67.2, 18.3],
+          [-66.9, 18.3],
+          [-66.9, 18.1],
+          [-67.2, 18.1],
+          [-67.2, 18.3]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Arecibo" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-66.75, 18.5],
+          [-66.5, 18.5],
+          [-66.5, 18.35],
+          [-66.75, 18.35],
+          [-66.75, 18.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Fajardo/Río Grande" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-65.95, 18.5],
+          [-65.75, 18.5],
+          [-65.75, 18.3],
+          [-65.95, 18.3],
+          [-65.95, 18.5]
+        ]]
+      }
+    }
+  ]
+}
