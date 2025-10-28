@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentType } from "react";
+import type { BarProps, LegendProps, LineProps, TooltipProps } from "recharts";
 import {
   defaultMonitoringViews,
   monitoringAlerts,
@@ -16,14 +17,29 @@ import { logAudit } from "@/lib/audit";
 
 const ResponsiveContainer = dynamic(() => import("recharts").then((mod) => mod.ResponsiveContainer), { ssr: false });
 const LineChart = dynamic(() => import("recharts").then((mod) => mod.LineChart), { ssr: false });
-const Line = dynamic(() => import("recharts").then((mod) => mod.Line), { ssr: false });
+const Line = dynamic<LineProps>(
+  () => import("recharts").then((mod) => mod.Line as ComponentType<LineProps>),
+  { ssr: false }
+);
 const CartesianGrid = dynamic(() => import("recharts").then((mod) => mod.CartesianGrid), { ssr: false });
 const XAxis = dynamic(() => import("recharts").then((mod) => mod.XAxis), { ssr: false });
 const YAxis = dynamic(() => import("recharts").then((mod) => mod.YAxis), { ssr: false });
-const Tooltip = dynamic(() => import("recharts").then((mod) => mod.Tooltip), { ssr: false });
-const Legend = dynamic(() => import("recharts").then((mod) => mod.Legend), { ssr: false });
+const Tooltip = dynamic<TooltipProps<number, string>>(
+  () =>
+    import("recharts").then(
+      (mod) => mod.Tooltip as ComponentType<TooltipProps<number, string>>
+    ),
+  { ssr: false }
+);
+const Legend = dynamic<LegendProps>(
+  () => import("recharts").then((mod) => mod.Legend as ComponentType<LegendProps>),
+  { ssr: false }
+);
 const BarChart = dynamic(() => import("recharts").then((mod) => mod.BarChart), { ssr: false });
-const Bar = dynamic(() => import("recharts").then((mod) => mod.Bar), { ssr: false });
+const Bar = dynamic<BarProps>(
+  () => import("recharts").then((mod) => mod.Bar as ComponentType<BarProps>),
+  { ssr: false }
+);
 
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",

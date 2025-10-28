@@ -10,7 +10,7 @@ const objectives = [
   { id: "acquire", title: "Acquire" },
   { id: "grow", title: "Grow" },
   { id: "retain", title: "Retain" }
-];
+] as const;
 
 export const ObjectiveEntry = () => {
   const router = useRouter();
@@ -32,7 +32,7 @@ export const ObjectiveEntry = () => {
         <button
           key={obj.id}
           type="button"
-          onClick={() => handleSelect(obj.id as typeof objectives[number]["id"])}
+          onClick={() => handleSelect(obj.id)}
           className="rounded-lg border border-slate-200 bg-white px-4 py-8 text-center text-lg font-semibold text-slate-700 shadow-sm hover:border-brand hover:text-brand"
         >
           {obj.title}
