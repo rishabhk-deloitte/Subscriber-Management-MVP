@@ -163,7 +163,18 @@ const createPopulation = () => {
   return population;
 };
 
-export const opportunityRankings: RankedOpportunity[] = [
+type RankedOpportunitySeed = Partial<
+  Pick<
+    RankedOpportunity,
+    "drivers" | "reach" | "eligible" | "confidence" | "deltaWoW" | "deltaMoM"
+  >
+> &
+  Omit<
+    RankedOpportunity,
+    "drivers" | "reach" | "eligible" | "confidence" | "deltaWoW" | "deltaMoM"
+  >;
+
+const rankedOpportunitySeed: RankedOpportunitySeed[] = [
   {
     id: "radar-01",
     name: "Condado fiber upsell cohorts",
@@ -431,6 +442,18 @@ export const opportunityRankings: RankedOpportunity[] = [
     },
   },
 ];
+
+export const opportunityRankings: RankedOpportunity[] = rankedOpportunitySeed.map(
+  (opportunity) => ({
+    drivers: [],
+    reach: [],
+    eligible: true,
+    confidence: 0.75,
+    deltaWoW: 0,
+    deltaMoM: 0,
+    ...opportunity,
+  }),
+);
 
 const heatmapAccumulator = opportunityRankings.reduce(
   (acc, opp) => {
