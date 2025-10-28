@@ -69,7 +69,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
   };
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white shadow-sm focus-within:ring-2 focus-within:ring-brand">
+    <article className="card focus-within:ring-2 focus-within:ring-brand-500">
       <button
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
@@ -78,9 +78,11 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand-600">
               <span>{opportunity.objective}</span>
-              <span className="rounded-full bg-brand/10 px-2 py-0.5 text-brand">{opportunity.product}</span>
+              <span className="chip border-brand-200 bg-brand-50 text-brand-700">
+                {opportunity.product}
+              </span>
             </div>
             <h3 className="mt-1 text-lg font-semibold text-slate-800">{opportunity.title}</h3>
             <p className="mt-1 text-sm text-slate-500">{opportunity.whyNow}</p>
@@ -102,7 +104,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
             Preview {opportunity.previewAudience.toLocaleString()} households
           </span>
           {opportunity.drivers.map((driver) => (
-            <span key={driver} className="rounded-full bg-brand/10 px-2 py-1 text-brand">
+            <span key={driver} className="chip border-brand-200 bg-brand-50 text-brand-700">
               {driver}
             </span>
           ))}
@@ -112,7 +114,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
             <span
               key={item.label}
               className={`rounded-full px-2 py-1 font-medium ${
-                item.enabled ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-400"
+                item.enabled ? "bg-brand-50 text-brand-700" : "bg-slate-100 text-slate-400"
               }`}
             >
               {item.label}
@@ -126,7 +128,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
             <button
               type="button"
               className={`rounded-md px-3 py-1 text-sm font-medium ${
-                tab === "overview" ? "bg-brand text-white" : "bg-slate-100 text-slate-600"
+                tab === "overview" ? "bg-brand-500 text-white" : "bg-slate-100 text-slate-600"
               }`}
               onClick={() => setTab("overview")}
             >
@@ -135,7 +137,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
             <button
               type="button"
               className={`rounded-md px-3 py-1 text-sm font-medium ${
-                tab === "heatmap" ? "bg-brand text-white" : "bg-slate-100 text-slate-600"
+                tab === "heatmap" ? "bg-brand-500 text-white" : "bg-slate-100 text-slate-600"
               }`}
               onClick={() => setTab("heatmap")}
             >
@@ -144,7 +146,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
             <button
               type="button"
               className={`rounded-md px-3 py-1 text-sm font-medium ${
-                tab === "benchmarks" ? "bg-brand text-white" : "bg-slate-100 text-slate-600"
+                tab === "benchmarks" ? "bg-brand-500 text-white" : "bg-slate-100 text-slate-600"
               }`}
               onClick={() => setTab("benchmarks")}
             >
@@ -153,7 +155,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
             <button
               type="button"
               className={`rounded-md px-3 py-1 text-sm font-medium ${
-                tab === "lineage" ? "bg-brand text-white" : "bg-slate-100 text-slate-600"
+                tab === "lineage" ? "bg-brand-500 text-white" : "bg-slate-100 text-slate-600"
               }`}
               onClick={() => setTab("lineage")}
             >

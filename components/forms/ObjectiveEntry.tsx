@@ -33,7 +33,7 @@ export const ObjectiveEntry = () => {
           key={obj.id}
           type="button"
           onClick={() => handleSelect(obj.id)}
-          className="rounded-lg border border-slate-200 bg-white px-4 py-8 text-center text-lg font-semibold text-slate-700 shadow-sm hover:border-brand hover:text-brand"
+          className="card px-4 py-8 text-center text-lg font-semibold text-slate-700 transition hover:border-brand-300 hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
         >
           {obj.title}
         </button>

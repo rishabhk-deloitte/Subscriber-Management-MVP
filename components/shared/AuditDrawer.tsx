@@ -47,7 +47,7 @@ export const AuditDrawer = ({ open, onClose }: Props) => {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600 hover:border-brand"
+            className="rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-brand-300 hover:text-brand-700"
           >
             Close
           </button>
@@ -58,7 +58,7 @@ export const AuditDrawer = ({ open, onClose }: Props) => {
             <select
               value={filter}
               onChange={(event) => setFilter(event.target.value)}
-              className="rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+              className="rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
             >
               <option value="all">All</option>
               <option value="campaign">Offer Designer</option>
@@ -70,7 +70,7 @@ export const AuditDrawer = ({ open, onClose }: Props) => {
           <button
             type="button"
             onClick={handleClear}
-            className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600 hover:border-brand"
+            className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-brand-300 hover:text-brand-700"
           >
             Clear
           </button>

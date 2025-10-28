@@ -83,8 +83,8 @@ export const SegmentList = () => {
           <button
             key={segment.id}
             onClick={() => setSelectedSegment(selected ? undefined : segment.id)}
-            className={`text-left rounded-xl border px-4 py-4 shadow-sm transition ${
-              selected ? "border-brand bg-brand/10" : "border-slate-200 bg-white hover:border-brand"
+            className={`card text-left px-4 py-4 transition focus:outline-none focus:ring-2 focus:ring-brand-500/40 ${
+              selected ? "border-brand-500 bg-brand-50" : "hover:border-brand-200"
             }`}
             type="button"
           >

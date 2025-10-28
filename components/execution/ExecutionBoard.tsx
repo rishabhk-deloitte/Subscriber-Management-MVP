@@ -15,7 +15,7 @@ const readinessGuardrails = {
 };
 
 const statusAccent: Record<string, string> = {
-  "on-track": "bg-emerald-100 text-emerald-700",
+  "on-track": "bg-brand-50 text-brand-700",
   "at-risk": "bg-amber-100 text-amber-700",
   delayed: "bg-rose-100 text-rose-700",
 };
@@ -24,7 +24,7 @@ const taskStatusAccent: Record<string, string> = {
   "Not started": "bg-slate-100 text-slate-600",
   "In progress": "bg-amber-100 text-amber-700",
   Blocked: "bg-rose-100 text-rose-700",
-  Done: "bg-emerald-100 text-emerald-700",
+  Done: "bg-brand-50 text-brand-700",
 };
 
 const computeReadiness = (campaign: CampaignBrief): ReadinessCheck[] => {
@@ -284,11 +284,11 @@ export const ExecutionBoard = () => {
   if (campaigns.length === 0) {
     return (
       <div className="space-y-4">
-        <header className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <header className="card p-6">
           <h1 className="text-2xl font-semibold text-slate-900">Execution Hub</h1>
           <p className="mt-2 text-sm text-slate-600">No offer briefs found. Create a brief to enable execution tracking.</p>
         </header>
-        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
+        <div className="card border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
           Pipeline, tasks, and readiness will appear once an Offer Designer brief is created.
         </div>
       </div>
@@ -297,7 +297,7 @@ export const ExecutionBoard = () => {
 
   return (
     <div className="space-y-6">
-      <header className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <header className="card p-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-wide text-slate-500">Role: Marketer</p>
@@ -308,14 +308,14 @@ export const ExecutionBoard = () => {
             <button
               type="button"
               onClick={handleExportHtml}
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:border-brand"
+              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:text-brand-700"
             >
               Export status (HTML)
             </button>
             <button
               type="button"
               onClick={handleExportCsv}
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:border-brand"
+              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:text-brand-700"
             >
               Export action items (CSV)
             </button>
@@ -326,7 +326,7 @@ export const ExecutionBoard = () => {
           <select
             value={selectedCampaignId ?? ""}
             onChange={(event) => handleCampaignChange(event.target.value)}
-            className="rounded-lg border border-slate-300 px-3 py-2 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+            className="rounded-lg border border-slate-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
           >
             <option value="" disabled>
               Select campaign
@@ -338,27 +338,27 @@ export const ExecutionBoard = () => {
             ))}
           </select>
           {selectedCampaign && (
-            <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
+            <span className="chip border-brand-200 bg-brand-50 text-brand-700">
               {selectedCampaign.status}
             </span>
           )}
         </div>
       </header>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="card p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Pipeline overview</h2>
           <p className="text-xs uppercase tracking-wide text-slate-500">Planning → Launch</p>
         </div>
         <div className="mt-6 grid gap-4 lg:grid-cols-3">
           {(pipelineByCampaign[selectedCampaignId ?? ""] ?? []).map((stage) => (
-            <div key={stage.id} className="rounded-lg border border-slate-200 p-4">
+            <div key={stage.id} className="card p-4">
               <div className="flex items-center justify-between text-sm font-semibold text-slate-700">
                 <span>{stage.name}</span>
                 <span className={`rounded-full px-2 py-1 text-xs ${statusAccent[stage.status]}`}>{stage.status}</span>
               </div>
               <div className="mt-3 h-2 rounded-full bg-slate-100">
-                <div className="h-full rounded-full bg-brand" style={{ width: `${stage.progress}%` }} />
+                <div className="h-full rounded-full bg-brand-500" style={{ width: `${stage.progress}%` }} />
               </div>
               <p className="mt-3 text-xs text-slate-500">Owner: {stage.owner}</p>
               <p className="mt-1 text-sm text-slate-600">{stage.notes}</p>
@@ -367,7 +367,7 @@ export const ExecutionBoard = () => {
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="card p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Task board</h2>
           <p className="text-xs uppercase tracking-wide text-slate-500">SLA countdown</p>
@@ -417,7 +417,7 @@ export const ExecutionBoard = () => {
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="card p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Approvals</h2>
           <p className="text-xs uppercase tracking-wide text-slate-500">Workflow</p>
@@ -427,7 +427,13 @@ export const ExecutionBoard = () => {
             <div key={approval.id} className="rounded-lg border border-slate-200 p-4">
               <div className="flex items-center justify-between text-sm font-semibold text-slate-700">
                 <span>{approval.approver}</span>
-                <span className={`rounded-full px-2 py-1 text-xs ${approval.status === "Approved" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
+                <span
+                  className={`rounded-full px-2 py-1 text-xs ${
+                    approval.status === "Approved"
+                      ? "bg-brand-50 text-brand-700"
+                      : "bg-amber-100 text-amber-700"
+                  }`}
+                >
                   {approval.status}
                 </span>
               </div>
@@ -439,11 +445,11 @@ export const ExecutionBoard = () => {
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="card p-6">
         <h2 className="text-lg font-semibold text-slate-900">Risks & blockers</h2>
         <div className="mt-4 grid gap-4 lg:grid-cols-3">
           {executionRisks.map((risk) => (
-            <div key={risk.id} className="rounded-lg border border-slate-200 p-4">
+            <div key={risk.id} className="card p-4">
               <div className="flex items-center justify-between text-sm font-semibold text-slate-700">
                 <span>{risk.severity} risk</span>
                 <span className="rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-500">{risk.status}</span>
@@ -453,7 +459,7 @@ export const ExecutionBoard = () => {
               <p className="mt-2 text-sm text-slate-600">Mitigation: {risk.mitigation}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {risk.tags.map((tag) => (
-                  <span key={tag} className="rounded-full bg-brand/10 px-2 py-1 text-xs text-brand">
+                  <span key={tag} className="chip border-brand-200 bg-brand-50 text-brand-700">
                     {tag}
                   </span>
                 ))}
@@ -463,13 +469,13 @@ export const ExecutionBoard = () => {
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="card p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Readiness checks</h2>
           <button
             type="button"
             onClick={handleRunReadiness}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:border-brand"
+            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:text-brand-700"
           >
             Run readiness check
           </button>
@@ -478,7 +484,7 @@ export const ExecutionBoard = () => {
           {readiness.map((check) => (
             <div
               key={check.id}
-              className={`rounded-lg border p-4 text-sm ${check.passed ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-rose-200 bg-rose-50 text-rose-700"}`}
+              className={`rounded-lg border p-4 text-sm ${check.passed ? "border-brand-200 bg-brand-50 text-brand-700" : "border-rose-200 bg-rose-50 text-rose-700"}`}
             >
               <p className="font-semibold">{check.label}</p>
               <p className="mt-2 text-xs text-slate-600">{check.detail}</p>
@@ -487,19 +493,19 @@ export const ExecutionBoard = () => {
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="card p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">In-app notifications</h2>
           <p className="text-xs uppercase tracking-wide text-slate-500">Audit captured</p>
         </div>
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           {pendingAlerts.map((message) => (
-            <div key={message} className="rounded-lg border border-slate-200 p-4">
+            <div key={message} className="card p-4">
               <p className="text-sm text-slate-700">{message}</p>
               <button
                 type="button"
                 onClick={() => handleSendAlert(message)}
-                className="mt-3 rounded-md border border-brand px-3 py-2 text-xs font-semibold text-brand hover:bg-brand/10"
+                className="mt-3 rounded-md border border-brand-500 px-3 py-2 text-xs font-semibold text-brand-600 hover:bg-brand-50"
               >
                 Send update
               </button>
