@@ -1,3 +1,7 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import { ContextComposerInput, Objective, RadarFilters, SegmentRuleGroup } from "./types";
 
 const encodeJSON = (value: unknown) => encodeURIComponent(JSON.stringify(value));
@@ -83,3 +87,59 @@ export const decodeSeedOpportunity = (searchParams: URLSearchParams): string | u
   const value = searchParams.get("seedOpportunityId");
   return value ? decodeURIComponent(value) : undefined;
 };
+
+export function useQueryState<T extends Record<string, string | string[] | undefined>>(init: T) {
+  const initialRef = useRef<T>(init);
+  const [state, setState] = useState<T>(initialRef.current);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const syncFromSearch = () => {
+      const params = new URLSearchParams(window.location.search);
+      const base: Record<string, string | string[] | undefined> = { ...initialRef.current };
+      params.forEach((value, key) => {
+        const all = params.getAll(key);
+        base[key] = all.length > 1 ? all : value;
+      });
+      setState(base as T);
+    };
+    syncFromSearch();
+    window.addEventListener("popstate", syncFromSearch);
+    return () => window.removeEventListener("popstate", syncFromSearch);
+  }, []);
+
+  const set = useCallback(
+    (patch: Partial<T>) => {
+      if (typeof window === "undefined") return;
+      setState((prev) => {
+        const next = { ...prev, ...patch } as T;
+        const params = new URLSearchParams(window.location.search);
+        Object.entries(patch).forEach(([key, value]) => {
+          params.delete(key);
+          if (value == null) return;
+          if (Array.isArray(value)) {
+            value.filter((entry) => entry !== "").forEach((entry) => params.append(key, entry));
+          } else {
+            const stringValue = String(value);
+            if (stringValue.length === 0) return;
+            params.set(key, stringValue);
+          }
+        });
+        const query = params.toString();
+        window.history.replaceState({}, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
+        return next;
+      });
+    },
+    [],
+  );
+
+  return [state, set] as const;
+}
+
+export function copyDeepLink() {
+  if (typeof window === "undefined") return;
+  const href = window.location.href;
+  navigator.clipboard?.writeText(href).catch((error) => {
+    console.warn("Failed to copy deep link", error);
+  });
+}

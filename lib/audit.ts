@@ -1,26 +1,11 @@
 import { AuditEntry } from "./types";
+import { safeStorage } from "./safe-storage";
 
 const STORAGE_KEY = "converge-subscriber-audit";
 
-const getEntries = (): AuditEntry[] => {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as AuditEntry[]) : [];
-  } catch (error) {
-    console.warn("Failed to read audit log", error);
-    return [];
-  }
-};
+const getEntries = (): AuditEntry[] => safeStorage.get<AuditEntry[]>(STORAGE_KEY, []);
 
-const persistEntries = (entries: AuditEntry[]) => {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-  } catch (error) {
-    console.warn("Failed to persist audit log", error);
-  }
-};
+const persistEntries = (entries: AuditEntry[]) => safeStorage.set(STORAGE_KEY, entries);
 
 export const logAudit = <T,>(entry: AuditEntry<T>) => {
   const entries = getEntries();
@@ -28,11 +13,8 @@ export const logAudit = <T,>(entry: AuditEntry<T>) => {
   persistEntries(entries.slice(0, 200));
 };
 
-export const readAudit = (): AuditEntry[] => {
-  return getEntries();
-};
+export const readAudit = (): AuditEntry[] => getEntries();
 
 export const clearAudit = () => {
-  if (typeof window === "undefined") return;
-  window.localStorage.removeItem(STORAGE_KEY);
+  safeStorage.remove(STORAGE_KEY);
 };

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { segmentDefinitions } from "@/lib/sample-data";
 import { SegmentDefinition, SegmentRuleGroup } from "@/lib/types";
-import { encodeRulesParam } from "@/lib/urlState";
+import { encodeRulesParam } from "@/lib/url-state";
 import { logAudit } from "@/lib/audit";
 
 const cloneSegment = (segment: SegmentDefinition): SegmentDefinition => {

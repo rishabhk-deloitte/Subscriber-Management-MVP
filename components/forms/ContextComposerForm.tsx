@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { macroZones } from "@/lib/sample-data";
 import { useStore } from "@/lib/store";
 import { getCopy } from "@/lib/i18n";
-import { encodeContextToSearch } from "@/lib/urlState";
+import { encodeContextToSearch } from "@/lib/url-state";
 import { runContextStub } from "@/lib/llm-stub";
 import { logAudit } from "@/lib/audit";
 import { format } from "date-fns";
@@ -19,8 +19,8 @@ const formSchema = z.object({
   product: z.enum(["Fiber", "Mobile", "FWA", "Bundle"]),
   planType: z.enum(["prepaid", "postpaid", "bundle"]),
   language: z.enum(["en", "es"]),
-  signals: z.array(z.string()).default([]),
-  bundleEligible: z.boolean().default(false),
+  signals: z.array(z.string()),
+  bundleEligible: z.boolean(),
   notes: z.string().optional()
 });
 

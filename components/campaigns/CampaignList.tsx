@@ -15,12 +15,12 @@ type Props = {
 const statusStyles: Record<CampaignBrief["status"], string> = {
   Draft: "bg-slate-100 text-slate-600",
   "In Review": "bg-amber-100 text-amber-700",
-  Approved: "bg-emerald-100 text-emerald-700",
+  Approved: "bg-brand-50 text-brand-700",
 };
 
 const objectiveColors: Record<CampaignBrief["objective"], string> = {
   acquire: "bg-sky-100 text-sky-700",
-  grow: "bg-emerald-100 text-emerald-700",
+  grow: "bg-brand-50 text-brand-700",
   retain: "bg-rose-100 text-rose-700",
 };
 
@@ -44,8 +44,8 @@ export const CampaignList = ({ campaigns, selectedId, onSelect }: Props) => {
             key={campaign.id}
             type="button"
             onClick={() => onSelect(campaign.id)}
-            className={`text-left rounded-xl border p-4 transition focus:outline-none focus:ring-2 focus:ring-brand/60 focus:ring-offset-2 ${
-              active ? "border-brand bg-brand/10" : "border-slate-200 bg-white hover:border-brand/60"
+            className={`card text-left p-4 transition focus:outline-none focus:ring-2 focus:ring-brand-500/60 focus:ring-offset-2 ${
+              active ? "border-brand-500 bg-brand-50" : "hover:border-brand-200"
             }`}
           >
             <div className="flex items-center justify-between text-xs font-medium uppercase tracking-wide">
@@ -85,7 +85,7 @@ export const CampaignList = ({ campaigns, selectedId, onSelect }: Props) => {
                 <dd>{format(new Date(campaign.updatedAt), "MMM d, HH:mm")}</dd>
               </div>
             </dl>
-            <div className="mt-4 text-sm font-medium text-brand hover:underline">
+            <div className="mt-4 text-sm font-medium text-brand-600 hover:underline">
               <Link href={`/campaigns/${campaign.id}`}>Edit brief</Link>
             </div>
           </button>

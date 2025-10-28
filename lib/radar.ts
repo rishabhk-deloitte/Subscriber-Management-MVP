@@ -65,7 +65,8 @@ export const filterOpportunities = (filters: RadarFilters): Opportunity[] => {
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
 
-const pill = (label: string) => `<span style="border:1px solid #0f766e;color:#0f766e;padding:2px 8px;border-radius:999px;margin-right:6px;font-size:12px;display:inline-block;">${label}</span>`;
+const pill = (label: string) =>
+  `<span style="border:1px solid #86BC25;color:#86BC25;padding:2px 8px;border-radius:999px;margin-right:6px;font-size:12px;display:inline-block;">${label}</span>`;
 
 export const buildOpportunitySnapshot = (
   opp: Opportunity,

@@ -28,7 +28,9 @@ const ZoneHeatmapComponent = ({ values }: ZoneHeatmapProps) => {
         <Geographies geography={geoData}>
           {({ geographies }) =>
             geographies.map((geo) => {
-              const zone = geo.properties.name as string;
+              const properties = geo.properties ?? {};
+              const nameValue = (properties as Record<string, unknown>)["name"];
+              const zone = typeof nameValue === "string" ? nameValue : "Unknown";
               const intensity = lookup.get(zone) ?? 0.2;
               return (
                 <Geography

@@ -1,5 +1,5 @@
 import "./globals.css";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 
 export const metadata = {
@@ -11,7 +11,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <AppShell>{children}</AppShell>
+        <Suspense fallback={<div className="p-6 text-slate-600">Loading experience…</div>}>
+          <AppShell>{children}</AppShell>
+        </Suspense>
       </body>
     </html>
   );
