@@ -11,12 +11,46 @@ import {
   MonitoringSavedView,
   MonitoringSeries,
   Opportunity,
+  PlanType,
+  Product,
   SegmentDefinition,
   SegmentRuleCondition,
   SegmentRuleGroup,
+  SegmentPopulationRecord,
   SegmentSampleProfile,
   SegmentVersion,
 } from "./types";
+
+export type RankedOpportunity = {
+  id: string;
+  name: string;
+  audience: number;
+  value: number;
+  confidence: number;
+  deltaWoW: number;
+  deltaMoM: number;
+  drivers: string[];
+  reach: ("sms" | "email" | "ads")[];
+  eligible: boolean;
+  geography: string;
+  product: Product;
+  segmentTag: string;
+  updatedAt: string;
+  slaHours: number;
+  lineage: {
+    kpi: string;
+    source: string;
+    schedule: string;
+    owner: string;
+  }[];
+  scenario: {
+    baseConv: number;
+    upliftPctBest: number;
+    upliftPctWorst: number;
+    arpu: number;
+    cost: number;
+  };
+};
 
 export const macroZones = [
   "San Juan Metro",
@@ -44,6 +78,405 @@ const mkLineage = (refreshed: string) => [
   { source: "Consent lakehouse", refreshed },
   { source: "Channel readiness warehouse", refreshed },
 ];
+
+const toGeoId = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+const mkRadarLineage = (kpi: string, refreshed: string) => [
+  {
+    kpi,
+    source: "Subscriber telemetry mart",
+    schedule: "Hourly",
+    owner: "Growth Analytics",
+  },
+  {
+    kpi: "Reach eligibility",
+    source: "Consent lakehouse",
+    schedule: "Daily",
+    owner: "CRM Ops",
+  },
+  {
+    kpi: "Channel readiness",
+    source: "Channel readiness warehouse",
+    schedule: "Every 6 hours",
+    owner: "Channel Enablement",
+  },
+];
+
+const planTypeOptions: PlanType[] = ["prepaid", "postpaid", "bundle"];
+
+const baseGeos: { geography: string; product: Product; arpuBand: "Low" | "Mid" | "High" }[] = [
+  { geography: "San Juan Metro", product: "Fiber", arpuBand: "High" },
+  { geography: "Bayamón", product: "Bundle", arpuBand: "Mid" },
+  { geography: "Carolina", product: "Mobile", arpuBand: "Mid" },
+  { geography: "Caguas", product: "Mobile", arpuBand: "Low" },
+  { geography: "Ponce", product: "FWA", arpuBand: "Mid" },
+  { geography: "Mayagüez", product: "Mobile", arpuBand: "Low" },
+  { geography: "Arecibo", product: "Mobile", arpuBand: "Low" },
+  { geography: "Fajardo/Río Grande", product: "Mobile", arpuBand: "Mid" },
+];
+
+const generateSparkline = (base: number, rand: () => number) =>
+  Array.from({ length: 6 }, (_, idx) => Number((base * (0.85 + rand() * 0.3) * (1 + idx * 0.015)).toFixed(2)));
+
+const createPopulation = () => {
+  let seed = 1337;
+  const rand = () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+
+  const population: SegmentPopulationRecord[] = [];
+  baseGeos.forEach((base) => {
+    const baseSize = 45 + Math.floor(rand() * 50);
+    for (let i = 0; i < 400; i += 1) {
+      const planType = planTypeOptions[Math.floor(rand() * planTypeOptions.length)];
+      const bundleEligible = planType !== "prepaid" ? rand() > 0.2 : rand() > 0.65;
+      const tenure = Math.floor(rand() * 96) + 1;
+      const consentSms = rand() > 0.35;
+      const consentEmail = rand() > 0.45;
+      const consentAds = rand() > 0.55;
+      population.push({
+        id: `${toGeoId(base.geography)}-${planType}-${i}`,
+        tenureMonths: tenure,
+        arpuBand: base.arpuBand,
+        planType,
+        bundleEligible,
+        geography: base.geography,
+        product: base.product,
+        channelConsent: {
+          sms: consentSms,
+          email: consentEmail,
+          ads: consentAds,
+        },
+        sparkline: generateSparkline(baseSize, rand),
+        restrictedAttributes:
+          planType === "prepaid" && tenure < 6
+            ? bundleEligible
+              ? (["planType"] as SegmentPopulationRecord["restrictedAttributes"])
+              : (["planType", "bundleEligible"] as SegmentPopulationRecord["restrictedAttributes"])
+            : !consentAds
+              ? (["consentWhatsApp"] as SegmentPopulationRecord["restrictedAttributes"])
+              : undefined,
+      });
+    }
+  });
+  return population;
+};
+
+export const opportunityRankings: RankedOpportunity[] = [
+  {
+    id: "radar-01",
+    name: "Condado fiber upsell cohorts",
+    audience: 5400,
+    value: 52000,
+    confidence: 0.78,
+    deltaWoW: 4.5,
+    deltaMoM: 7.2,
+    drivers: [
+      "Promo expiry watchers",
+      "High ARPU corridor",
+      "Fiber interest spike",
+      "Retail concierge inquiries",
+    ],
+    reach: ["sms", "email", "ads"],
+    eligible: true,
+    geography: "San Juan Metro",
+    product: "Fiber",
+    segmentTag: "Upsell loyalists",
+    updatedAt: "2024-05-12T08:30:00Z",
+    slaHours: 24,
+    lineage: mkRadarLineage("Modeled uplift", "2024-05-12T08:30:00Z"),
+    scenario: {
+      baseConv: 0.045,
+      upliftPctBest: 0.22,
+      upliftPctWorst: 0.08,
+      arpu: 78,
+      cost: 18000,
+    },
+  },
+  {
+    id: "radar-02",
+    name: "Bayamón bundle activators",
+    audience: 4200,
+    value: 47000,
+    confidence: 0.74,
+    deltaWoW: 3.1,
+    deltaMoM: 6.4,
+    drivers: ["Bundle intents", "Retail readiness", "Cross-sell uplift"],
+    reach: ["email", "ads"],
+    eligible: true,
+    geography: "Bayamón",
+    product: "Bundle",
+    segmentTag: "Household expansion",
+    updatedAt: "2024-05-11T09:10:00Z",
+    slaHours: 36,
+    lineage: mkRadarLineage("Bundle attach", "2024-05-11T09:10:00Z"),
+    scenario: {
+      baseConv: 0.038,
+      upliftPctBest: 0.18,
+      upliftPctWorst: 0.06,
+      arpu: 96,
+      cost: 15000,
+    },
+  },
+  {
+    id: "radar-03",
+    name: "Mayagüez recovery credits",
+    audience: 3100,
+    value: 26000,
+    confidence: 0.66,
+    deltaWoW: -1.8,
+    deltaMoM: 2.2,
+    drivers: ["Storm escalations", "WhatsApp consent", "Relief hotline calls"],
+    reach: ["sms"],
+    eligible: true,
+    geography: "Mayagüez",
+    product: "Mobile",
+    segmentTag: "Retention relief",
+    updatedAt: "2024-05-10T05:45:00Z",
+    slaHours: 18,
+    lineage: mkRadarLineage("Retention risk", "2024-05-10T05:45:00Z"),
+    scenario: {
+      baseConv: 0.052,
+      upliftPctBest: 0.16,
+      upliftPctWorst: 0.04,
+      arpu: 52,
+      cost: 9000,
+    },
+  },
+  {
+    id: "radar-04",
+    name: "Ponce FWA backups",
+    audience: 2300,
+    value: 24000,
+    confidence: 0.59,
+    deltaWoW: 2.6,
+    deltaMoM: 3.8,
+    drivers: ["Outage history", "DSL churn risk", "Rural clusters"],
+    reach: ["sms", "ads"],
+    eligible: false,
+    geography: "Ponce",
+    product: "FWA",
+    segmentTag: "Outage mitigation",
+    updatedAt: "2024-05-09T13:30:00Z",
+    slaHours: 48,
+    lineage: mkRadarLineage("Backup adoption", "2024-05-09T13:30:00Z"),
+    scenario: {
+      baseConv: 0.033,
+      upliftPctBest: 0.21,
+      upliftPctWorst: 0.07,
+      arpu: 68,
+      cost: 22000,
+    },
+  },
+  {
+    id: "radar-05",
+    name: "Caguas prepaid save offers",
+    audience: 1800,
+    value: 19000,
+    confidence: 0.52,
+    deltaWoW: -2.4,
+    deltaMoM: -1.1,
+    drivers: ["Top-up drop", "Competitive promo"],
+    reach: ["sms", "email"],
+    eligible: true,
+    geography: "Caguas",
+    product: "Mobile",
+    segmentTag: "Prepaid retention",
+    updatedAt: "2024-05-08T07:15:00Z",
+    slaHours: 24,
+    lineage: mkRadarLineage("Save offer uptake", "2024-05-08T07:15:00Z"),
+    scenario: {
+      baseConv: 0.062,
+      upliftPctBest: 0.14,
+      upliftPctWorst: 0.05,
+      arpu: 38,
+      cost: 6000,
+    },
+  },
+  {
+    id: "radar-06",
+    name: "San Juan enterprise loop",
+    audience: 1500,
+    value: 54000,
+    confidence: 0.71,
+    deltaWoW: 5.6,
+    deltaMoM: 8.9,
+    drivers: [
+      "Multi-site RFQs",
+      "Fiber capacity",
+      "SLA escalation",
+      "On-net expansion",
+    ],
+    reach: ["email", "ads"],
+    eligible: true,
+    geography: "San Juan Metro",
+    product: "Fiber",
+    segmentTag: "Enterprise loop",
+    updatedAt: "2024-05-12T03:25:00Z",
+    slaHours: 12,
+    lineage: mkRadarLineage("Enterprise loop", "2024-05-12T03:25:00Z"),
+    scenario: {
+      baseConv: 0.028,
+      upliftPctBest: 0.25,
+      upliftPctWorst: 0.09,
+      arpu: 220,
+      cost: 35000,
+    },
+  },
+  {
+    id: "radar-07",
+    name: "Arecibo mobile winback",
+    audience: 2700,
+    value: 22000,
+    confidence: 0.48,
+    deltaWoW: -3.2,
+    deltaMoM: -0.8,
+    drivers: ["Port-out spike", "Inactive autopay", "Store escalation"],
+    reach: ["sms"],
+    eligible: false,
+    geography: "Arecibo",
+    product: "Mobile",
+    segmentTag: "Churn winback",
+    updatedAt: "2024-05-07T18:05:00Z",
+    slaHours: 30,
+    lineage: mkRadarLineage("Winback response", "2024-05-07T18:05:00Z"),
+    scenario: {
+      baseConv: 0.041,
+      upliftPctBest: 0.19,
+      upliftPctWorst: 0.03,
+      arpu: 46,
+      cost: 12000,
+    },
+  },
+  {
+    id: "radar-08",
+    name: "Fajardo seasonal roamers",
+    audience: 1250,
+    value: 12000,
+    confidence: 0.44,
+    deltaWoW: 1.2,
+    deltaMoM: 0.6,
+    drivers: ["Tourism surge", "Roaming costs"],
+    reach: ["email", "ads"],
+    eligible: true,
+    geography: "Fajardo/Río Grande",
+    product: "Mobile",
+    segmentTag: "Seasonal roamers",
+    updatedAt: "2024-05-06T06:40:00Z",
+    slaHours: 42,
+    lineage: mkRadarLineage("Roaming conversion", "2024-05-06T06:40:00Z"),
+    scenario: {
+      baseConv: 0.037,
+      upliftPctBest: 0.12,
+      upliftPctWorst: 0.02,
+      arpu: 55,
+      cost: 8000,
+    },
+  },
+  {
+    id: "radar-09",
+    name: "Liberty Loop caregivers",
+    audience: 3600,
+    value: 33000,
+    confidence: 0.63,
+    deltaWoW: 2.9,
+    deltaMoM: 4.1,
+    drivers: [
+      "Caregiver bundles",
+      "Telehealth demand",
+      "Bundled mobile caregivers",
+      "Home monitoring add-ons",
+      "Remote care coaches",
+    ],
+    reach: ["sms", "email"],
+    eligible: true,
+    geography: "San Juan Metro",
+    product: "Bundle",
+    segmentTag: "Caregiver advocates",
+    updatedAt: "2024-05-11T14:55:00Z",
+    slaHours: 24,
+    lineage: mkRadarLineage("Bundle retention", "2024-05-11T14:55:00Z"),
+    scenario: {
+      baseConv: 0.048,
+      upliftPctBest: 0.2,
+      upliftPctWorst: 0.07,
+      arpu: 88,
+      cost: 16000,
+    },
+  },
+  {
+    id: "radar-10",
+    name: "Vieques microgrid pilots",
+    audience: 920,
+    value: 15000,
+    confidence: 0.38,
+    deltaWoW: -4.8,
+    deltaMoM: -2.5,
+    drivers: ["Microgrid readiness", "Infrastructure grants"],
+    reach: ["ads"],
+    eligible: false,
+    geography: "Vieques",
+    product: "FWA",
+    segmentTag: "Innovation pilots",
+    updatedAt: "2024-05-05T04:20:00Z",
+    slaHours: 60,
+    lineage: mkRadarLineage("Pilot enrollment", "2024-05-05T04:20:00Z"),
+    scenario: {
+      baseConv: 0.029,
+      upliftPctBest: 0.24,
+      upliftPctWorst: 0.05,
+      arpu: 102,
+      cost: 28000,
+    },
+  },
+];
+
+const heatmapAccumulator = opportunityRankings.reduce(
+  (acc, opp) => {
+    const id = toGeoId(opp.geography);
+    if (!acc[id]) {
+      acc[id] = {
+        id,
+        name: opp.geography,
+        audience: 0,
+        value: 0,
+        confidenceSum: 0,
+        count: 0,
+      };
+    }
+    acc[id].audience += opp.audience;
+    acc[id].value += opp.value;
+    acc[id].confidenceSum += opp.confidence;
+    acc[id].count += 1;
+    return acc;
+  },
+  {} as Record<
+    string,
+    {
+      id: string;
+      name: string;
+      audience: number;
+      value: number;
+      confidenceSum: number;
+      count: number;
+    }
+  >,
+);
+
+export const radarHeatmapData = Object.fromEntries(
+  Object.values(heatmapAccumulator).map((bucket) => [
+    bucket.id,
+    {
+      name: bucket.name,
+      audience: bucket.audience,
+      value: bucket.value,
+      confidence: Number((bucket.confidenceSum / bucket.count).toFixed(2)),
+    },
+  ]),
+) as Record<string, { name: string; audience: number; value: number; confidence: number }>;
+
+export const segmentPopulation: SegmentPopulationRecord[] = createPopulation();
 
 export const opportunities: Opportunity[] = [
   {
@@ -1480,34 +1913,49 @@ export const monitoringSeries: MonitoringSeries[] = [
     id: "series-activations",
     name: "Activations",
     metric: "Activations",
-    points: Array.from({ length: 10 }).map((_, idx) => ({
-      date: `2024-0${Math.floor(idx / 3) + 1}-${(idx % 10) + 1}`,
-      actual: 900 + idx * 65,
-      plan: 880 + idx * 55,
-      previous: 820 + idx * 50,
-    })),
+    points: Array.from({ length: 10 }).map((_, idx) => {
+      const plan = 880 + idx * 55;
+      return {
+        date: `2024-0${Math.floor(idx / 3) + 1}-${(idx % 10) + 1}`,
+        actual: 900 + idx * 65,
+        plan,
+        planLow: plan * 0.94,
+        planHigh: plan * 1.06,
+        previous: 820 + idx * 50,
+      };
+    }),
   },
   {
     id: "series-churn",
     name: "Churn",
     metric: "Churn",
-    points: Array.from({ length: 10 }).map((_, idx) => ({
-      date: `2024-0${Math.floor(idx / 3) + 1}-${(idx % 10) + 1}`,
-      actual: Number((3.8 - idx * 0.15).toFixed(2)),
-      plan: Number((4.0 - idx * 0.12).toFixed(2)),
-      previous: Number((4.2 - idx * 0.1).toFixed(2)),
-    })),
+    points: Array.from({ length: 10 }).map((_, idx) => {
+      const plan = Number((4.0 - idx * 0.12).toFixed(2));
+      return {
+        date: `2024-0${Math.floor(idx / 3) + 1}-${(idx % 10) + 1}`,
+        actual: Number((3.8 - idx * 0.15).toFixed(2)),
+        plan,
+        planLow: Number((plan * 0.95).toFixed(2)),
+        planHigh: Number((plan * 1.05).toFixed(2)),
+        previous: Number((4.2 - idx * 0.1).toFixed(2)),
+      };
+    }),
   },
   {
     id: "series-revenue",
     name: "Revenue",
     metric: "Revenue",
-    points: Array.from({ length: 10 }).map((_, idx) => ({
-      date: `2024-0${Math.floor(idx / 3) + 1}-${(idx % 10) + 1}`,
-      actual: 240000 + idx * 9500,
-      plan: 230000 + idx * 8800,
-      previous: 220000 + idx * 8200,
-    })),
+    points: Array.from({ length: 10 }).map((_, idx) => {
+      const plan = 230000 + idx * 8800;
+      return {
+        date: `2024-0${Math.floor(idx / 3) + 1}-${(idx % 10) + 1}`,
+        actual: 240000 + idx * 9500,
+        plan,
+        planLow: plan * 0.93,
+        planHigh: plan * 1.05,
+        previous: 220000 + idx * 8200,
+      };
+    }),
   },
 ];
 
@@ -1547,6 +1995,12 @@ export const monitoringBreakdowns: MonitoringBreakdown[] = [
     ],
   },
 ];
+
+export const monitoringLift = {
+  label: "Liberty Loop lift",
+  treatment: 4.8,
+  holdout: 3.6,
+};
 
 export const monitoringFunnel: MonitoringFunnelStep[] = [
   { label: "Impressions", count: 128000 },

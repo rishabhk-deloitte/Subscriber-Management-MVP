@@ -33,6 +33,21 @@ export interface OpportunityLineage {
   refreshed: string;
 }
 
+export interface MetricLineage {
+  kpi: string;
+  source: string;
+  schedule: string;
+  owner: string;
+}
+
+export interface ScenarioInput {
+  baseConv: number;
+  upliftPctBest: number;
+  upliftPctWorst: number;
+  arpu: number;
+  cost: number;
+}
+
 export interface OpportunityBenchmark {
   competitor: BenchmarkCompetitor;
   offer: string;
@@ -119,6 +134,23 @@ export interface SegmentRuleGroup {
 }
 
 export type SegmentRuleNode = SegmentRuleCondition | SegmentRuleGroup;
+
+export interface SegmentPopulationRecord {
+  id: string;
+  tenureMonths: number;
+  arpuBand: "Low" | "Mid" | "High";
+  planType: PlanType;
+  bundleEligible: boolean;
+  geography: string;
+  product: Product;
+  channelConsent: {
+    sms: boolean;
+    email: boolean;
+    ads: boolean;
+  };
+  sparkline: number[];
+  restrictedAttributes?: SegmentAttributeKey[];
+}
 
 export interface GuardrailWarning {
   id: string;
@@ -347,6 +379,8 @@ export interface MonitoringSeriesPoint {
   actual: number;
   plan: number;
   previous?: number;
+  planLow?: number;
+  planHigh?: number;
 }
 
 export interface MonitoringSeries {
@@ -367,6 +401,12 @@ export interface MonitoringBreakdown {
   label: string;
   type: "channel" | "segment" | "offer";
   slices: MonitoringBreakdownSlice[];
+}
+
+export interface MonitoringLift {
+  label: string;
+  treatment: number;
+  holdout: number;
 }
 
 export interface MonitoringFunnelStep {
@@ -412,7 +452,7 @@ export interface ContextComposerInput {
   language: "en" | "es";
   signals: string[];
   notes?: string;
-  bundleEligible?: boolean;
+  bundleEligible: boolean;
 }
 
 export interface ClarifyingFieldOption {
@@ -457,6 +497,9 @@ export interface RadarFilters {
     from?: string;
     to?: string;
   };
+  geography?: string;
+  product?: Product;
+  segment?: string;
 }
 
 export interface RadarSeed {
@@ -465,6 +508,14 @@ export interface RadarSeed {
   createdAt: string;
   filters: RadarFilters;
   opportunityId?: string;
+}
+
+export interface BookmarkEntry {
+  id: string;
+  label: string;
+  route: string;
+  params: Record<string, string>;
+  createdAt: string;
 }
 
 export interface StoreState {
@@ -485,4 +536,8 @@ export interface StoreState {
   hydrateSeeds: () => void;
   addSeed: (seed: RadarSeed) => void;
   removeSeed: (id: string) => void;
+  bookmarks: BookmarkEntry[];
+  hydrateBookmarks: () => void;
+  addBookmark: (bookmark: BookmarkEntry) => void;
+  removeBookmark: (id: string) => void;
 }

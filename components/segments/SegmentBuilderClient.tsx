@@ -640,7 +640,7 @@ export const SegmentBuilderClient = () => {
         <div className="space-y-4">
           <RuleGroupEditor group={rules} isRoot onChange={handleChange} onRemove={() => undefined} />
           {driverGroup && (
-            <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm">
+            <div className="card p-4 text-sm text-slate-600">
               <h2 className="text-sm font-semibold text-slate-700">Recommended attributes from radar</h2>
               <ul className="mt-2 list-disc space-y-1 pl-5">
                 {flattenRuleDescriptions(driverGroup).map((item) => (
@@ -650,11 +650,11 @@ export const SegmentBuilderClient = () => {
             </div>
           )}
           {recommended.length > 0 && (
-            <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm">
+            <div className="card p-4 text-sm text-slate-600">
               <h2 className="text-sm font-semibold text-slate-700">Opportunity-aligned attributes</h2>
               <div className="mt-2 flex flex-wrap gap-2">
                 {recommended.map((attr) => (
-                  <span key={attr} className="rounded-full bg-brand/10 px-2 py-1 text-xs font-semibold text-brand">
+                  <span key={attr} className="chip border-brand-200 bg-brand-50 text-brand-700">
                     {attr}
                   </span>
                 ))}
@@ -662,7 +662,7 @@ export const SegmentBuilderClient = () => {
             </div>
           )}
           {seeds.length > 0 && (
-            <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm">
+            <div className="card p-4 text-sm text-slate-600">
               <h2 className="text-sm font-semibold text-slate-700">Saved seeds</h2>
               <ul className="mt-2 space-y-2">
                 {seeds.map((seed) => (
@@ -685,7 +685,7 @@ export const SegmentBuilderClient = () => {
           )}
         </div>
         <aside className="space-y-4">
-          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <section className="card p-4">
             <h2 className="text-sm font-semibold text-slate-700">Segment snapshot</h2>
             <p className="mt-2 text-sm text-slate-600">Size {metrics.size.toLocaleString()} · Trend {metrics.trend.toFixed(1)}</p>
             <p className="text-xs uppercase tracking-wide text-slate-400">Freshness {metrics.freshness}</p>
@@ -699,11 +699,11 @@ export const SegmentBuilderClient = () => {
               </ul>
             )}
           </section>
-          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <section className="card p-4">
             <h2 className="text-sm font-semibold text-slate-700">Reachability & eligibility</h2>
             <ReachList reach={metrics.reach} />
           </section>
-          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <section className="card p-4">
             <h2 className="text-sm font-semibold text-slate-700">Estimated impact</h2>
             <dl className="mt-2 grid grid-cols-2 gap-3 text-sm text-slate-600">
               <div>
@@ -732,7 +732,7 @@ export const SegmentBuilderClient = () => {
               </div>
             </dl>
           </section>
-          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <section className="card p-4">
             <h2 className="text-sm font-semibold text-slate-700">Sample profiles</h2>
             <ul className="mt-3 space-y-3 text-sm text-slate-600">
               {profiles.map((profile) => (
@@ -744,7 +744,7 @@ export const SegmentBuilderClient = () => {
               {profiles.length === 0 && <li className="text-xs text-slate-400">Rules too narrow for profile preview.</li>}
             </ul>
           </section>
-          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <section className="card p-4">
             <h2 className="text-sm font-semibold text-slate-700">Data lineage</h2>
             <ul className="mt-3 space-y-1 text-xs text-slate-500">
               <li>Consent lakehouse · refreshed {metrics.freshness}</li>

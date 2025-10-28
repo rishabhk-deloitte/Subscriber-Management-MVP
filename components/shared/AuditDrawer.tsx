@@ -47,7 +47,7 @@ export const AuditDrawer = ({ open, onClose }: Props) => {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600 hover:border-brand"
+            className="rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-brand-300 hover:text-brand-700"
           >
             Close
           </button>
@@ -58,7 +58,7 @@ export const AuditDrawer = ({ open, onClose }: Props) => {
             <select
               value={filter}
               onChange={(event) => setFilter(event.target.value)}
-              className="rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+              className="rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
             >
               <option value="all">All</option>
               <option value="campaign">Offer Designer</option>
@@ -70,7 +70,7 @@ export const AuditDrawer = ({ open, onClose }: Props) => {
           <button
             type="button"
             onClick={handleClear}
-            className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600 hover:border-brand"
+            className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-brand-300 hover:text-brand-700"
           >
             Clear
           </button>
@@ -80,20 +80,26 @@ export const AuditDrawer = ({ open, onClose }: Props) => {
             <p className="text-sm text-slate-500">No audit events captured yet.</p>
           ) : (
             <ul className="space-y-3">
-              {filtered.map((entry, index) => (
-                <li key={`${entry.timestamp}-${index}`} className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-                  <div className="flex items-center justify-between text-xs uppercase tracking-wide text-slate-500">
-                    <span>{entry.type}</span>
-                    <span>{formatTimestamp(entry.timestamp)}</span>
-                  </div>
-                  <p className="mt-2 text-slate-700">Route: {entry.route}</p>
-                  {entry.payload && (
-                    <pre className="mt-2 overflow-x-auto rounded-md bg-white p-3 text-xs text-slate-600">
-                      {JSON.stringify(entry.payload, null, 2)}
-                    </pre>
-                  )}
-                </li>
-              ))}
+              {filtered.map((entry, index) => {
+                const hasPayload = entry.payload !== null && entry.payload !== undefined;
+                return (
+                  <li
+                    key={`${entry.timestamp}-${index}`}
+                    className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600"
+                  >
+                    <div className="flex items-center justify-between text-xs uppercase tracking-wide text-slate-500">
+                      <span>{entry.type}</span>
+                      <span>{formatTimestamp(entry.timestamp)}</span>
+                    </div>
+                    <p className="mt-2 text-slate-700">Route: {entry.route}</p>
+                    {hasPayload && (
+                      <pre className="mt-2 overflow-x-auto rounded-md bg-white p-3 text-xs text-slate-600">
+                        {JSON.stringify(entry.payload, null, 2)}
+                      </pre>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

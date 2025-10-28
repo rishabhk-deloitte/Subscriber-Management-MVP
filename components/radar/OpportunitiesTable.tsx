@@ -28,7 +28,8 @@ export const OpportunitiesTable = () => {
         product: "Fiber",
         planType: "postpaid",
         language: locale,
-        signals: []
+        signals: [],
+        bundleEligible: false
       });
     }
     return undefined;
@@ -68,8 +69,8 @@ export const OpportunitiesTable = () => {
               <td className="px-4 py-3 text-sm font-medium text-slate-800">{opp!.title}</td>
               <td className="px-4 py-3 text-sm text-slate-600">{opp!.zone}</td>
               <td className="px-4 py-3 text-sm text-slate-600">{opp!.product}</td>
-              <td className="px-4 py-3 text-sm text-slate-600">${opp!.value.toLocaleString()}</td>
-              <td className="px-4 py-3 text-sm text-slate-600">{Math.round(opp!.probability * 100)}%</td>
+              <td className="px-4 py-3 text-sm text-slate-600">${opp!.estimatedValue.toLocaleString()}</td>
+              <td className="px-4 py-3 text-sm text-slate-600">{Math.round(opp!.confidence * 100)}%</td>
             </tr>
           ))}
         </tbody>

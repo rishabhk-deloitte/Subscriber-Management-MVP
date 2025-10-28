@@ -1,3 +1,6 @@
+import { useCallback, useMemo } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
 import { ContextComposerInput, Objective, RadarFilters, SegmentRuleGroup } from "./types";
 
 const encodeJSON = (value: unknown) => encodeURIComponent(JSON.stringify(value));
@@ -82,4 +85,71 @@ export const encodeSeedOpportunity = (opportunityId: string) => `seedOpportunity
 export const decodeSeedOpportunity = (searchParams: URLSearchParams): string | undefined => {
   const value = searchParams.get("seedOpportunityId");
   return value ? decodeURIComponent(value) : undefined;
+};
+
+type QueryStateOptions<T> = {
+  parse?: (value: string | null) => T;
+  serialize?: (value: T) => string;
+  defaultValue?: T;
+};
+
+const defaultParse = <T,>(value: string | null): T | undefined => {
+  if (value == null) return undefined;
+  try {
+    return JSON.parse(decodeURIComponent(value)) as T;
+  } catch (error) {
+    console.warn("Failed to parse query state", error);
+    return undefined;
+  }
+};
+
+const defaultSerialize = <T,>(value: T) => encodeURIComponent(JSON.stringify(value));
+
+export const useQueryState = <T,>(key: string, options: QueryStateOptions<T> = {}) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const { parse = defaultParse as NonNullable<QueryStateOptions<T>["parse"]>, serialize = defaultSerialize, defaultValue } =
+    options;
+
+  const value = useMemo(() => {
+    const raw = searchParams.get(key);
+    const parsed = parse(raw);
+    if (parsed === undefined) {
+      return defaultValue as T | undefined;
+    }
+    return parsed;
+  }, [defaultValue, key, parse, searchParams]);
+
+  const setValue = useCallback(
+    (next: T | undefined) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (next === undefined || next === null) {
+        params.delete(key);
+      } else {
+        params.set(key, serialize(next));
+      }
+      const query = params.toString();
+      router.replace(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
+    },
+    [key, pathname, router, searchParams, serialize],
+  );
+
+  return [value ?? defaultValue, setValue] as const;
+};
+
+export const copyDeepLink = async (elementId?: string) => {
+  if (typeof window === "undefined") return undefined;
+  const url = new URL(window.location.href);
+  if (elementId) {
+    url.hash = elementId;
+  }
+  try {
+    await navigator.clipboard.writeText(url.toString());
+    return url.toString();
+  } catch (error) {
+    console.warn("Failed to copy deep link", error);
+    return url.toString();
+  }
 };
