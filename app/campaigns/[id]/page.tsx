@@ -22,7 +22,7 @@ export default function EditCampaignPage() {
       <div className="space-y-4">
         <header className="border-b border-slate-200 pb-4">
           <p className="text-xs uppercase tracking-wide text-slate-500">Offer Designer</p>
-          <h1 className="text-2xl font-semibold text-slate-900">Offer brief not found</h1>
+          <h1 className="text-xl font-semibold text-slate-900">Offer brief not found</h1>
           <Link href="/campaigns" className="text-sm text-brand underline">
             Back to offer list
           </Link>
@@ -36,7 +36,7 @@ export default function EditCampaignPage() {
     <div className="space-y-6">
       <header className="flex flex-col gap-2 border-b border-slate-200 pb-4">
         <p className="text-xs uppercase tracking-wide text-slate-500">Offer Designer</p>
-        <h1 className="text-2xl font-semibold text-slate-900">Edit offer brief</h1>
+        <h1 className="text-xl font-semibold text-slate-900">Edit offer brief</h1>
         <p className="text-sm text-slate-600">Update Liberty Loop offers with versioning and compliance guardrails.</p>
         <Link href="/campaigns" className="text-sm text-brand underline">
           Back to offer list

@@ -296,7 +296,7 @@ export const ExecutionBoard = () => {
     return (
       <div className="space-y-4">
         <header className="card p-6">
-          <h1 className="text-2xl font-semibold text-slate-900">Execution Hub</h1>
+          <h1 className="text-xl font-semibold text-slate-900">Execution Hub</h1>
           <p className="mt-2 text-sm text-slate-600">No offer briefs found. Create a brief to enable execution tracking.</p>
         </header>
         <div className="card border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
@@ -312,7 +312,7 @@ export const ExecutionBoard = () => {
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-wide text-slate-500">Role: Marketer</p>
-            <h1 className="text-2xl font-semibold text-slate-900">Execution Hub</h1>
+            <h1 className="text-xl font-semibold text-slate-900">Execution Hub</h1>
             <p className="text-sm text-slate-600">Coordinate pipeline, guardrails, and PMO workflows for Liberty offers.</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">

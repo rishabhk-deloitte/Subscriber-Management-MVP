@@ -595,7 +595,7 @@ export const SegmentBuilderClient = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Segment Studio</h1>
+          <h1 className="text-xl font-semibold text-slate-800">Segment Studio</h1>
           <p className="text-sm text-slate-500">Compose Liberty Puerto Rico-ready cohorts with guardrails.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

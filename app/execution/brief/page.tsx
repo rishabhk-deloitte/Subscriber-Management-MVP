@@ -29,7 +29,7 @@ export default function ExecutionBriefPage() {
   if (!campaign) {
     return (
       <main className="min-h-screen bg-white p-8 text-slate-900">
-        <h1 className="text-2xl font-semibold">Execution brief</h1>
+        <h1 className="text-xl font-semibold">Execution brief</h1>
         <p className="mt-2 text-sm text-slate-600">No campaign data available.</p>
       </main>
     );
@@ -39,7 +39,7 @@ export default function ExecutionBriefPage() {
     <main className="min-h-screen bg-white p-10 text-slate-900">
       <header className="border-b border-slate-200 pb-6">
         <p className="text-xs uppercase tracking-wide text-slate-500">Liberty Puerto Rico · Execution brief</p>
-        <h1 className="mt-2 text-3xl font-semibold">{campaign.name}</h1>
+        <h1 className="mt-2 text-2xl font-semibold">{campaign.name}</h1>
         <p className="mt-1 text-sm text-slate-600">Generated {format(new Date(), "PPP p")}</p>
       </header>
 

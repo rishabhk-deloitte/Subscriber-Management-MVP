@@ -117,7 +117,7 @@ export const OfferDesignerClient = () => {
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Offer Designer</h1>
+          <h1 className="text-xl font-semibold text-slate-900">Offer Designer</h1>
           <p className="text-sm text-slate-600">
             Build Liberty Loop-ready briefs with deterministic channel guardrails.
           </p>

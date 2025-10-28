@@ -75,7 +75,7 @@ export const SegmentsIndexClient = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-2 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Segment Studio</h1>
+          <h1 className="text-xl font-semibold text-slate-800">Segment Studio</h1>
           <p className="text-sm text-slate-500">Saved segments with size, trend, and freshness summaries.</p>
         </div>
         <Link

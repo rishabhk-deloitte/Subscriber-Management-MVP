@@ -10,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-slate-950 text-slate-100 antialiased">
+      <body className="bg-white text-slate-900 antialiased">
         <Suspense fallback={<div className="p-6 text-slate-600">Loading experience…</div>}>
           <AppShell>{children}</AppShell>
         </Suspense>

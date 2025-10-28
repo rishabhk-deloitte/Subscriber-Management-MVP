@@ -214,7 +214,7 @@ export const RadarClient = () => {
     <div className="space-y-6">
       <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Opportunity Radar</h1>
+          <h1 className="text-xl font-semibold text-slate-800">Opportunity Radar</h1>
           <p className="text-sm text-slate-500">Deterministic ranking of Liberty Puerto Rico opportunities.</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">

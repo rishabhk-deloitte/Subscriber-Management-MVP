@@ -103,7 +103,7 @@ export default function MonitoringPage() {
       <section className="card space-y-4 p-6">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Monitoring overview</h1>
+            <h1 className="text-xl font-semibold text-slate-900">Monitoring overview</h1>
             <p className="text-sm text-slate-500">Campaign health and Liberty Loop performance with confidence intervals.</p>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">

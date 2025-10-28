@@ -159,7 +159,7 @@ export const MonitoringClient = () => {
       <header className="card flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-xs uppercase tracking-wide text-slate-500">Monitoring</p>
-          <h1 className="text-2xl font-semibold text-slate-900">Performance dashboard</h1>
+          <h1 className="text-xl font-semibold text-slate-900">Performance dashboard</h1>
           <p className="text-sm text-slate-600">Track activations, churn, and Liberty Loop pacing with deterministic telemetry.</p>
         </div>
         <div className="flex flex-col items-start gap-3 md:items-end">

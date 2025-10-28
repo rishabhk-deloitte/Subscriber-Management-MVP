@@ -139,7 +139,7 @@ export default function SegmentsPage() {
     <main className="space-y-10">
       <section className="space-y-3">
         <header>
-          <h1 className="text-2xl font-semibold text-slate-900">Segment Studio</h1>
+          <h1 className="text-xl font-semibold text-slate-900">Segment Studio</h1>
           <p className="text-sm text-slate-500">
             Compose AND/OR rules, measure live audience size, and validate reach before activation.
           </p>
