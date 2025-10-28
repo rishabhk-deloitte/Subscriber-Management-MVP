@@ -3,53 +3,67 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
-  --brand-50: #F5FAEB;
-  --brand-100: #E9F4D2;
-  --brand-200: #D3E9A5;
-  --brand-300: #BBDD73;
-  --brand-400: #A6CF5B;
-  --brand-500: #86BC25;
-  --brand-600: #6EA61B;
-  --brand-700: #5E8E16;
-  --brand-800: #4C7211;
-  --brand-900: #39540C;
-  --focus-ring: rgba(134, 188, 37, 0.35);
+  color-scheme: dark;
+}
+
+html {
+  font-size: 15px;
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-slate-950 text-slate-100 antialiased;
 }
 
-a {
-  color: var(--brand-600);
-  transition: color 150ms ease;
+h1,
+.h1 {
+  font-size: clamp(1.25rem, 1.1rem + 1.2vw, 1.75rem);
+  font-weight: 600;
 }
 
-a:hover {
-  color: var(--brand-700);
+h2,
+.h2 {
+  font-size: clamp(1.125rem, 1rem + 0.8vw, 1.5rem);
+  font-weight: 600;
 }
 
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid transparent;
-  box-shadow: 0 0 0 3px var(--focus-ring);
+h3,
+.h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+@layer base {
+  .text-slate-900,
+  .text-slate-800,
+  .text-slate-700 {
+    color: rgb(226 232 240);
+  }
+
+  .text-slate-600 {
+    color: rgb(203 213 225);
+  }
+
+  .bg-white {
+    background-color: rgba(15, 23, 42, 0.85);
+  }
+
+  .bg-slate-50 {
+    background-color: rgba(15, 23, 42, 0.65);
+  }
 }
 
 .card {
-  @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+  @apply rounded-xl bg-slate-900/80 shadow-lg shadow-black/30 backdrop-blur;
 }
 
-.tile {
-  @apply card flex flex-col items-center justify-center gap-1 p-5 text-center;
+.btn-primary {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-medium;
 }
 
 .chip {
-  @apply inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600;
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-emerald-300 ring-1 ring-emerald-500/30 bg-emerald-500/10 text-xs;
 }
 
-.badge {
-  @apply inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600;
+a.link {
+  @apply text-emerald-300 hover:text-emerald-200 underline underline-offset-4;
 }
