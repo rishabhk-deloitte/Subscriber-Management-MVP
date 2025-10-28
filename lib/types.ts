@@ -412,7 +412,7 @@ export interface ContextComposerInput {
   language: "en" | "es";
   signals: string[];
   notes?: string;
-  bundleEligible?: boolean;
+  bundleEligible: boolean;
 }
 
 export interface ClarifyingFieldOption {

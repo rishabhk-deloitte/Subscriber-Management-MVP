@@ -28,7 +28,8 @@ export const OpportunitiesTable = () => {
         product: "Fiber",
         planType: "postpaid",
         language: locale,
-        signals: []
+        signals: [],
+        bundleEligible: false
       });
     }
     return undefined;
