@@ -1,6 +1,8 @@
 "use client";
 
+import { type ComponentType } from "react";
 import dynamic from "next/dynamic";
+import type { LineProps, TooltipProps } from "recharts";
 import { kpiBundles } from "@/lib/sample-data";
 
 const ResponsiveContainer = dynamic(() => import("recharts").then((mod) => mod.ResponsiveContainer), { ssr: false });
@@ -8,8 +10,17 @@ const LineChart = dynamic(() => import("recharts").then((mod) => mod.LineChart),
 const XAxis = dynamic(() => import("recharts").then((mod) => mod.XAxis), { ssr: false });
 const YAxis = dynamic(() => import("recharts").then((mod) => mod.YAxis), { ssr: false });
 const CartesianGrid = dynamic(() => import("recharts").then((mod) => mod.CartesianGrid), { ssr: false });
-const Tooltip = dynamic(() => import("recharts").then((mod) => mod.Tooltip), { ssr: false });
-const Line = dynamic(() => import("recharts").then((mod) => mod.Line), { ssr: false });
+const Tooltip = dynamic<TooltipProps<number, string>>(
+  () =>
+    import("recharts").then(
+      (mod) => mod.Tooltip as ComponentType<TooltipProps<number, string>>
+    ),
+  { ssr: false }
+);
+const Line = dynamic<LineProps>(
+  () => import("recharts").then((mod) => mod.Line as ComponentType<LineProps>),
+  { ssr: false }
+);
 
 export const KPIChart = () => {
   const series = kpiBundles[0].series;

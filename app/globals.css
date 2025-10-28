@@ -4,6 +4,17 @@
 
 :root {
   color-scheme: light;
+  --brand-50: #F5FAEB;
+  --brand-100: #E9F4D2;
+  --brand-200: #D3E9A5;
+  --brand-300: #BBDD73;
+  --brand-400: #A6CF5B;
+  --brand-500: #86BC25;
+  --brand-600: #6EA61B;
+  --brand-700: #5E8E16;
+  --brand-800: #4C7211;
+  --brand-900: #39540C;
+  --focus-ring: rgba(134, 188, 37, 0.35);
 }
 
 body {
@@ -11,12 +22,34 @@ body {
 }
 
 a {
-  @apply text-brand hover:text-brand-muted transition-colors;
+  color: var(--brand-600);
+  transition: color 150ms ease;
+}
+
+a:hover {
+  color: var(--brand-700);
 }
 
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  @apply outline outline-2 outline-offset-2 outline-brand;
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.card {
+  @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+
+.tile {
+  @apply card flex flex-col items-center justify-center gap-1 p-5 text-center;
+}
+
+.chip {
+  @apply inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600;
+}
+
+.badge {
+  @apply inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600;
 }

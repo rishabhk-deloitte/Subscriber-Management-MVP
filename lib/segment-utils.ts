@@ -174,10 +174,14 @@ const computeReach = (size: number, rules: SegmentRuleGroup): ChannelReach => {
 };
 
 const guardrails = [
-  { channel: "Email", key: "email" as const, threshold: 2000 },
-  { channel: "Paid Social", key: "paidSocial" as const, threshold: 5000 },
-  { channel: "Display", key: "display" as const, threshold: 10000 },
-];
+  { channel: "Email", key: "email", threshold: 2000 },
+  { channel: "Paid Social", key: "paidSocial", threshold: 5000 },
+  { channel: "Display", key: "display", threshold: 10000 },
+] as const satisfies ReadonlyArray<{
+  channel: GuardrailWarning["channel"];
+  key: keyof ChannelReach;
+  threshold: number;
+}>;
 
 const computeWarnings = (reach: ChannelReach): GuardrailWarning[] => {
   return guardrails

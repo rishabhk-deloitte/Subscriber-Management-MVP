@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo } from "react";
+import { useMemo, type ComponentType } from "react";
+import type { BarProps, TooltipProps } from "recharts";
 import { opportunities } from "@/lib/sample-data";
 import { useSearchParams } from "next/navigation";
 import { decodeContextFromSearch } from "@/lib/urlState";
@@ -12,8 +13,17 @@ const BarChart = dynamic(() => import("recharts").then((mod) => mod.BarChart), {
 const XAxis = dynamic(() => import("recharts").then((mod) => mod.XAxis), { ssr: false });
 const YAxis = dynamic(() => import("recharts").then((mod) => mod.YAxis), { ssr: false });
 const CartesianGrid = dynamic(() => import("recharts").then((mod) => mod.CartesianGrid), { ssr: false });
-const Tooltip = dynamic(() => import("recharts").then((mod) => mod.Tooltip), { ssr: false });
-const Bar = dynamic(() => import("recharts").then((mod) => mod.Bar), { ssr: false });
+const Tooltip = dynamic<TooltipProps<number, string>>(
+  () =>
+    import("recharts").then(
+      (mod) => mod.Tooltip as ComponentType<TooltipProps<number, string>>
+    ),
+  { ssr: false }
+);
+const Bar = dynamic<BarProps>(
+  () => import("recharts").then((mod) => mod.Bar as ComponentType<BarProps>),
+  { ssr: false }
+);
 
 export const OpportunityChart = () => {
   const searchParams = useSearchParams();
@@ -21,13 +31,13 @@ export const OpportunityChart = () => {
 
   const data = useMemo(() => {
     if (!context) {
-      return opportunities.slice(0, 6).map((opp) => ({ name: opp.zone, value: opp.value }));
+      return opportunities.slice(0, 6).map((opp) => ({ name: opp.zone, value: opp.estimatedValue }));
     }
     const stub = runContextStub(context);
     return stub.rankedOpportunityIds
       .map((id) => opportunities.find((opp) => opp.id === id))
       .filter(Boolean)
-      .map((opp) => ({ name: opp!.zone, value: opp!.value }));
+      .map((opp) => ({ name: opp!.zone, value: opp!.estimatedValue }));
   }, [context]);
 
   return (

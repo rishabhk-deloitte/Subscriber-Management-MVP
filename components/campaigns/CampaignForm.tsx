@@ -440,12 +440,12 @@ export const CampaignForm = ({ campaign, mode }: Props) => {
           <textarea
             rows={3}
             {...form.register("valueProp")}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
           />
         </label>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="card p-6">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Audience linkage</h2>
         <div className="mt-4 grid gap-6 sm:grid-cols-2">
           <label className="space-y-2 text-sm">
@@ -567,12 +567,12 @@ export const CampaignForm = ({ campaign, mode }: Props) => {
               key={entry.channel}
               type="button"
               onClick={() => handleChannelToggle(entry.channel)}
-              className={`rounded-lg border p-4 text-left transition focus:outline-none focus:ring-2 focus:ring-brand/40 focus:ring-offset-2 ${
-                selectedChannels.includes(entry.channel)
-                  ? "border-brand bg-brand/10"
-                  : "border-slate-200 bg-white hover:border-brand/60"
-              }`}
-            >
+            className={`card p-4 text-left transition focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:ring-offset-2 ${
+              selectedChannels.includes(entry.channel)
+                ? "border-brand-500 bg-brand-50"
+                : "hover:border-brand-200"
+            }`}
+          >
               <div className="flex items-center justify-between text-sm font-semibold text-slate-700">
                 <span>{entry.channel}</span>
               </div>
@@ -583,7 +583,7 @@ export const CampaignForm = ({ campaign, mode }: Props) => {
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="card p-6">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Assumptions & compliance notes</h2>
         <div className="mt-4 grid gap-6 sm:grid-cols-2">
           <label className="space-y-2 text-sm">
@@ -591,7 +591,7 @@ export const CampaignForm = ({ campaign, mode }: Props) => {
             <textarea
               rows={4}
               {...form.register("assumptions")}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
             />
           </label>
           <label className="space-y-2 text-sm">
@@ -599,13 +599,13 @@ export const CampaignForm = ({ campaign, mode }: Props) => {
             <textarea
               rows={4}
               {...form.register("compliance")}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
             />
           </label>
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="card p-6">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Forecast</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">

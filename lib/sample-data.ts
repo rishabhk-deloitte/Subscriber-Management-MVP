@@ -18,6 +18,19 @@ import {
   SegmentVersion,
 } from "./types";
 
+export type RankedOpportunity = {
+  id: string;
+  name: string;
+  audience: number;
+  value: number;
+  confidence: number;
+  deltaWoW: number;
+  deltaMoM: number;
+  drivers: string[];
+  reach: ("sms" | "email" | "ads")[];
+  eligible: boolean;
+};
+
 export const macroZones = [
   "San Juan Metro",
   "Bayamón",
@@ -43,6 +56,145 @@ const mkLineage = (refreshed: string) => [
   { source: "Subscriber telemetry mart", refreshed },
   { source: "Consent lakehouse", refreshed },
   { source: "Channel readiness warehouse", refreshed },
+];
+
+export const opportunityRankings: RankedOpportunity[] = [
+  {
+    id: "radar-01",
+    name: "Condado fiber upsell cohorts",
+    audience: 5400,
+    value: 52000,
+    confidence: 0.78,
+    deltaWoW: 4.5,
+    deltaMoM: 7.2,
+    drivers: [
+      "Promo expiry watchers",
+      "High ARPU corridor",
+      "Fiber interest spike",
+      "Retail concierge inquiries",
+    ],
+    reach: ["sms", "email", "ads"],
+    eligible: true,
+  },
+  {
+    id: "radar-02",
+    name: "Bayamón bundle activators",
+    audience: 4200,
+    value: 47000,
+    confidence: 0.74,
+    deltaWoW: 3.1,
+    deltaMoM: 6.4,
+    drivers: ["Bundle intents", "Retail readiness", "Cross-sell uplift"],
+    reach: ["email", "ads"],
+    eligible: true,
+  },
+  {
+    id: "radar-03",
+    name: "Mayagüez recovery credits",
+    audience: 3100,
+    value: 26000,
+    confidence: 0.66,
+    deltaWoW: -1.8,
+    deltaMoM: 2.2,
+    drivers: ["Storm escalations", "WhatsApp consent", "Relief hotline calls"],
+    reach: ["sms"],
+    eligible: true,
+  },
+  {
+    id: "radar-04",
+    name: "Ponce FWA backups",
+    audience: 2300,
+    value: 24000,
+    confidence: 0.59,
+    deltaWoW: 2.6,
+    deltaMoM: 3.8,
+    drivers: ["Outage history", "DSL churn risk", "Rural clusters"],
+    reach: ["sms", "ads"],
+    eligible: false,
+  },
+  {
+    id: "radar-05",
+    name: "Caguas prepaid save offers",
+    audience: 1800,
+    value: 19000,
+    confidence: 0.52,
+    deltaWoW: -2.4,
+    deltaMoM: -1.1,
+    drivers: ["Top-up drop", "Competitive promo"],
+    reach: ["sms", "email"],
+    eligible: true,
+  },
+  {
+    id: "radar-06",
+    name: "San Juan enterprise loop",
+    audience: 1500,
+    value: 54000,
+    confidence: 0.71,
+    deltaWoW: 5.6,
+    deltaMoM: 8.9,
+    drivers: [
+      "Multi-site RFQs",
+      "Fiber capacity",
+      "SLA escalation",
+      "On-net expansion",
+    ],
+    reach: ["email", "ads"],
+    eligible: true,
+  },
+  {
+    id: "radar-07",
+    name: "Arecibo mobile winback",
+    audience: 2700,
+    value: 22000,
+    confidence: 0.48,
+    deltaWoW: -3.2,
+    deltaMoM: -0.8,
+    drivers: ["Port-out spike", "Inactive autopay", "Store escalation"],
+    reach: ["sms"],
+    eligible: false,
+  },
+  {
+    id: "radar-08",
+    name: "Fajardo seasonal roamers",
+    audience: 1250,
+    value: 12000,
+    confidence: 0.44,
+    deltaWoW: 1.2,
+    deltaMoM: 0.6,
+    drivers: ["Tourism surge", "Roaming costs"],
+    reach: ["email", "ads"],
+    eligible: true,
+  },
+  {
+    id: "radar-09",
+    name: "Liberty Loop caregivers",
+    audience: 3600,
+    value: 33000,
+    confidence: 0.63,
+    deltaWoW: 2.9,
+    deltaMoM: 4.1,
+    drivers: [
+      "Caregiver bundles",
+      "Telehealth demand",
+      "Bundled mobile caregivers",
+      "Home monitoring add-ons",
+      "Remote care coaches",
+    ],
+    reach: ["sms", "email"],
+    eligible: true,
+  },
+  {
+    id: "radar-10",
+    name: "Vieques microgrid pilots",
+    audience: 920,
+    value: 15000,
+    confidence: 0.38,
+    deltaWoW: -4.8,
+    deltaMoM: -2.5,
+    drivers: ["Microgrid readiness", "Infrastructure grants"],
+    reach: ["ads"],
+    eligible: false,
+  },
 ];
 
 export const opportunities: Opportunity[] = [

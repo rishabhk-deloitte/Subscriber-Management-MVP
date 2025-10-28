@@ -3,20 +3,45 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ContextComposerInput, ContextInterpretation, Opportunity } from "@/lib/types";
 import { format } from "date-fns";
-import { formattedTrend, formatEligibility, snapshotBlob } from "@/lib/radar";
+
+import { BrandBadge } from "@/components/ui/Brand";
 import { logAudit } from "@/lib/audit";
+import { formattedTrend, formatEligibility, snapshotBlob } from "@/lib/radar";
+import type {
+  ContextComposerInput,
+  ContextInterpretation,
+  Opportunity,
+} from "@/lib/types";
+import type { RankedOpportunity } from "@/lib/sample-data";
 
-const ZoneHeatmap = dynamic(() => import("./ZoneMap").then((mod) => mod.ZoneHeatmap), { ssr: false });
+const ZoneHeatmap = dynamic(() => import("./ZoneMap").then((mod) => mod.ZoneHeatmap), {
+  ssr: false,
+});
 
-interface OpportunityCardProps {
+const REACH_CHANNELS = [
+  { key: "sms", label: "SMS" },
+  { key: "email", label: "Email" },
+  { key: "ads", label: "Ads" },
+] as const;
+
+type RankedOpportunityCardProps = {
+  variant: "ranked";
+  opportunity: RankedOpportunity;
+  rank: number;
+  minAudience: number;
+};
+
+type DetailedOpportunityCardProps = {
+  variant?: "detailed";
   opportunity: Opportunity;
   context?: ContextComposerInput;
   interpretation?: ContextInterpretation;
-}
+};
 
-const channelLabels: { key: keyof Opportunity["reachability"]; label: string }[] = [
+type OpportunityCardProps = RankedOpportunityCardProps | DetailedOpportunityCardProps;
+
+const detailedChannelLabels: { key: keyof Opportunity["reachability"]; label: string }[] = [
   { key: "email", label: "Email" },
   { key: "sms", label: "SMS" },
   { key: "whatsapp", label: "WhatsApp" },
@@ -35,13 +60,156 @@ const download = (blob: Blob, filename: string) => {
   URL.revokeObjectURL(url);
 };
 
-export const OpportunityCard = ({ opportunity, context, interpretation }: OpportunityCardProps) => {
+export function OpportunityCard(props: OpportunityCardProps) {
+  if (props.variant === "ranked") {
+    return <RankedOpportunityCard {...props} />;
+  }
+
+  const { opportunity, context, interpretation } = props;
+  return (
+    <DetailedOpportunityCard
+      opportunity={opportunity}
+      context={context}
+      interpretation={interpretation}
+    />
+  );
+}
+
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function DeltaIndicator({ label, value }: { label: string; value: number }) {
+  const isPositive = value >= 0;
+  const arrow = isPositive ? "▲" : "▼";
+  const color = isPositive ? "text-brand-600" : "text-rose-600";
+
+  return (
+    <div className="flex flex-col">
+      <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</span>
+      <span className={`flex items-center gap-1 text-sm font-semibold ${color}`}>
+        {arrow} {Math.abs(value).toFixed(1)}%
+      </span>
+    </div>
+  );
+}
+
+function RankedOpportunityCard({ opportunity, rank, minAudience }: RankedOpportunityCardProps) {
+  const belowThreshold = opportunity.audience < minAudience;
+  const score = Math.round(opportunity.value * opportunity.confidence);
+  const confidencePct = Math.round(opportunity.confidence * 100);
+
+  return (
+    <article
+      className={`card h-full p-6 transition ${belowThreshold ? "opacity-60" : "hover:shadow-md"}`}
+      aria-disabled={belowThreshold}
+      title={belowThreshold ? "below threshold" : undefined}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-2">
+          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Opportunity</span>
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700">
+              #{rank}
+            </span>
+            <h3 className="text-lg font-semibold text-slate-900">{opportunity.name}</h3>
+          </div>
+          <p className="text-xs text-slate-500">Ranked by value × confidence</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs uppercase tracking-wide text-slate-500">Score</p>
+          <p className="text-lg font-semibold text-brand-600">{score.toLocaleString()}</p>
+          <p className="text-xs text-slate-500">Min audience {minAudience.toLocaleString()}</p>
+        </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Size</p>
+          <p className="text-lg font-semibold text-slate-900">{opportunity.audience.toLocaleString()}</p>
+          <p className="text-xs text-slate-500">audience</p>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Value</p>
+          <p className="text-lg font-semibold text-slate-900">{formatCurrency(opportunity.value)}</p>
+          <p className="text-xs text-slate-500">modeled uplift</p>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Confidence</p>
+          <p className="text-lg font-semibold text-slate-900">{confidencePct}%</p>
+          <p className="text-xs text-slate-500">signal strength</p>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-6">
+        <DeltaIndicator label="WoW" value={opportunity.deltaWoW} />
+        <DeltaIndicator label="MoM" value={opportunity.deltaMoM} />
+      </div>
+
+      <div className="mt-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Drivers</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {opportunity.drivers.slice(0, 4).map((driver) => (
+            <span
+              key={driver}
+              className="chip border-brand-200 bg-brand-50 text-brand-700"
+              title={driver}
+            >
+              {driver}
+            </span>
+          ))}
+          {opportunity.drivers.length > 4 && (
+            <span className="chip border-slate-200 bg-slate-100 text-slate-600">
+              +{opportunity.drivers.length - 4} more
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-4 space-y-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Reachability</p>
+          <div className="mt-2 flex flex-wrap gap-3">
+            {REACH_CHANNELS.map((channel) => {
+              const enabled = opportunity.reach.includes(channel.key);
+              return (
+                <div key={channel.key} className="flex items-center gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    {channel.label}
+                  </span>
+                  <BrandBadge status={enabled ? "on-track" : "blocked"} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Eligibility</p>
+          <BrandBadge status={opportunity.eligible ? "on-track" : "blocked"} />
+          <span className="text-xs text-slate-500">
+            {opportunity.eligible ? "Ready for activation" : "Needs enablement"}
+          </span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function DetailedOpportunityCard({
+  opportunity,
+  context,
+  interpretation,
+}: DetailedOpportunityCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [tab, setTab] = useState<"overview" | "heatmap" | "benchmarks" | "lineage">("overview");
 
   const reachability = useMemo(
     () =>
-      channelLabels.map(({ key, label }) => ({
+      detailedChannelLabels.map(({ key, label }) => ({
         label,
         enabled: opportunity.reachability[key] as boolean,
       })),
@@ -69,7 +237,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
   };
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white shadow-sm focus-within:ring-2 focus-within:ring-brand">
+    <article className="card focus-within:ring-2 focus-within:ring-brand-500">
       <button
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
@@ -78,9 +246,11 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand-600">
               <span>{opportunity.objective}</span>
-              <span className="rounded-full bg-brand/10 px-2 py-0.5 text-brand">{opportunity.product}</span>
+              <span className="chip border-brand-200 bg-brand-50 text-brand-700">
+                {opportunity.product}
+              </span>
             </div>
             <h3 className="mt-1 text-lg font-semibold text-slate-800">{opportunity.title}</h3>
             <p className="mt-1 text-sm text-slate-500">{opportunity.whyNow}</p>
@@ -102,7 +272,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
             Preview {opportunity.previewAudience.toLocaleString()} households
           </span>
           {opportunity.drivers.map((driver) => (
-            <span key={driver} className="rounded-full bg-brand/10 px-2 py-1 text-brand">
+            <span key={driver} className="chip border-brand-200 bg-brand-50 text-brand-700">
               {driver}
             </span>
           ))}
@@ -112,7 +282,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
             <span
               key={item.label}
               className={`rounded-full px-2 py-1 font-medium ${
-                item.enabled ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-400"
+                item.enabled ? "bg-brand-50 text-brand-700" : "bg-slate-100 text-slate-400"
               }`}
             >
               {item.label}
@@ -126,7 +296,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
             <button
               type="button"
               className={`rounded-md px-3 py-1 text-sm font-medium ${
-                tab === "overview" ? "bg-brand text-white" : "bg-slate-100 text-slate-600"
+                tab === "overview" ? "bg-brand-500 text-white" : "bg-slate-100 text-slate-600"
               }`}
               onClick={() => setTab("overview")}
             >
@@ -135,7 +305,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
             <button
               type="button"
               className={`rounded-md px-3 py-1 text-sm font-medium ${
-                tab === "heatmap" ? "bg-brand text-white" : "bg-slate-100 text-slate-600"
+                tab === "heatmap" ? "bg-brand-500 text-white" : "bg-slate-100 text-slate-600"
               }`}
               onClick={() => setTab("heatmap")}
             >
@@ -144,7 +314,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
             <button
               type="button"
               className={`rounded-md px-3 py-1 text-sm font-medium ${
-                tab === "benchmarks" ? "bg-brand text-white" : "bg-slate-100 text-slate-600"
+                tab === "benchmarks" ? "bg-brand-500 text-white" : "bg-slate-100 text-slate-600"
               }`}
               onClick={() => setTab("benchmarks")}
             >
@@ -153,7 +323,7 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
             <button
               type="button"
               className={`rounded-md px-3 py-1 text-sm font-medium ${
-                tab === "lineage" ? "bg-brand text-white" : "bg-slate-100 text-slate-600"
+                tab === "lineage" ? "bg-brand-500 text-white" : "bg-slate-100 text-slate-600"
               }`}
               onClick={() => setTab("lineage")}
             >
@@ -233,4 +403,4 @@ export const OpportunityCard = ({ opportunity, context, interpretation }: Opport
       )}
     </article>
   );
-};
+}

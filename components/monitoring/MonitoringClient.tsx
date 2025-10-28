@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentType } from "react";
+import type { BarProps, LegendProps, LineProps, TooltipProps } from "recharts";
 import {
   defaultMonitoringViews,
   monitoringAlerts,
@@ -16,14 +17,29 @@ import { logAudit } from "@/lib/audit";
 
 const ResponsiveContainer = dynamic(() => import("recharts").then((mod) => mod.ResponsiveContainer), { ssr: false });
 const LineChart = dynamic(() => import("recharts").then((mod) => mod.LineChart), { ssr: false });
-const Line = dynamic(() => import("recharts").then((mod) => mod.Line), { ssr: false });
+const Line = dynamic<LineProps>(
+  () => import("recharts").then((mod) => mod.Line as ComponentType<LineProps>),
+  { ssr: false }
+);
 const CartesianGrid = dynamic(() => import("recharts").then((mod) => mod.CartesianGrid), { ssr: false });
 const XAxis = dynamic(() => import("recharts").then((mod) => mod.XAxis), { ssr: false });
 const YAxis = dynamic(() => import("recharts").then((mod) => mod.YAxis), { ssr: false });
-const Tooltip = dynamic(() => import("recharts").then((mod) => mod.Tooltip), { ssr: false });
-const Legend = dynamic(() => import("recharts").then((mod) => mod.Legend), { ssr: false });
+const Tooltip = dynamic<TooltipProps<number, string>>(
+  () =>
+    import("recharts").then(
+      (mod) => mod.Tooltip as ComponentType<TooltipProps<number, string>>
+    ),
+  { ssr: false }
+);
+const Legend = dynamic<LegendProps>(
+  () => import("recharts").then((mod) => mod.Legend as ComponentType<LegendProps>),
+  { ssr: false }
+);
 const BarChart = dynamic(() => import("recharts").then((mod) => mod.BarChart), { ssr: false });
-const Bar = dynamic(() => import("recharts").then((mod) => mod.Bar), { ssr: false });
+const Bar = dynamic<BarProps>(
+  () => import("recharts").then((mod) => mod.Bar as ComponentType<BarProps>),
+  { ssr: false }
+);
 
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -125,7 +141,7 @@ export const MonitoringClient = () => {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+      <header className="card flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-xs uppercase tracking-wide text-slate-500">Monitoring</p>
           <h1 className="text-2xl font-semibold text-slate-900">Performance dashboard</h1>
@@ -141,7 +157,7 @@ export const MonitoringClient = () => {
                   defaultMonitoringViews.find((item) => item.id === event.target.value);
                 if (view) handleApplyView(view);
               }}
-              className="rounded-lg border border-slate-300 px-3 py-2 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+              className="rounded-lg border border-slate-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
             >
               {[...defaultMonitoringViews, ...views].map((view) => (
                 <option key={view.id} value={view.id}>
@@ -152,7 +168,7 @@ export const MonitoringClient = () => {
             <button
               type="button"
               onClick={handleSaveView}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:border-brand"
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:text-brand-700"
             >
               Save current filters
             </button>
@@ -182,10 +198,18 @@ export const MonitoringClient = () => {
 
       <section className="grid gap-4 md:grid-cols-5">
         {monitoringKpis.map((kpi) => (
-          <div key={kpi.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div key={kpi.id} className="card p-4">
             <div className="flex items-center justify-between text-xs uppercase tracking-wide text-slate-500">
               <span>{kpi.label}</span>
-              <span className={`rounded-full px-2 py-1 text-[10px] ${kpi.confidence === "High" ? "bg-emerald-100 text-emerald-700" : kpi.confidence === "Medium" ? "bg-amber-100 text-amber-700" : "bg-rose-100 text-rose-700"}`}>
+              <span
+                className={`chip px-2 py-1 text-[10px] ${
+                  kpi.confidence === "High"
+                    ? "border-brand-200 bg-brand-50 text-brand-700"
+                    : kpi.confidence === "Medium"
+                    ? "border-amber-200 bg-amber-50 text-amber-700"
+                    : "border-rose-200 bg-rose-50 text-rose-700"
+                }`}
+              >
                 {kpi.confidence}
               </span>
             </div>
@@ -199,7 +223,7 @@ export const MonitoringClient = () => {
             <p className="mt-1 text-xs text-slate-500">
               Plan {kpi.unit === "currency" ? currency.format(kpi.plan) : kpi.unit === "percent" ? `${kpi.plan.toFixed(1)}%` : kpi.plan.toLocaleString()} · Prev {kpi.unit === "currency" ? currency.format(kpi.previous) : kpi.unit === "percent" ? `${kpi.previous.toFixed(1)}%` : kpi.previous.toLocaleString()}
             </p>
-            <p className={`mt-2 text-xs font-semibold ${kpi.trend >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+            <p className={`mt-2 text-xs font-semibold ${kpi.trend >= 0 ? "text-brand-600" : "text-rose-600"}`}>
               {kpi.trend >= 0 ? "▲" : "▼"} {Math.abs(kpi.trend).toFixed(1)}%
             </p>
           </div>
@@ -207,13 +231,13 @@ export const MonitoringClient = () => {
       </section>
 
       <section className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="card p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-slate-900">Trend</h2>
             <select
               value={selectedMetricId}
               onChange={(event) => setSelectedMetricId(event.target.value)}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
             >
               {monitoringSeries.map((series) => (
                 <option key={series.id} value={series.id}>
@@ -230,8 +254,8 @@ export const MonitoringClient = () => {
                 <YAxis stroke="#64748b" tick={{ fontSize: 12 }} />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="actual" stroke="#0f766e" strokeWidth={3} dot={false} name="Actual" />
-                <Line type="monotone" dataKey="plan" stroke="#14b8a6" strokeWidth={2} strokeDasharray="6 4" dot={false} name="Plan" />
+                <Line type="monotone" dataKey="actual" stroke="var(--brand-500)" strokeWidth={3} dot={false} name="Actual" />
+                <Line type="monotone" dataKey="plan" stroke="var(--brand-300)" strokeWidth={2} strokeDasharray="6 4" dot={false} name="Plan" />
                 <Line type="monotone" dataKey="previous" stroke="#94a3b8" strokeWidth={2} strokeDasharray="4 4" dot={false} name="Prior" />
               </LineChart>
             </ResponsiveContainer>
@@ -259,7 +283,7 @@ export const MonitoringClient = () => {
                 payload: { metric: metricSeries.metric, open: !showLineage },
               });
             }}
-            className="mt-4 text-sm font-medium text-brand underline"
+            className="mt-4 text-sm font-medium text-brand-600 underline"
           >
             {showLineage ? "Hide" : "Show"} lineage
           </button>
@@ -276,7 +300,7 @@ export const MonitoringClient = () => {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="card p-6">
             <h2 className="text-lg font-semibold text-slate-900">Breakdowns</h2>
             <div className="mt-4 space-y-4">
               {monitoringBreakdowns.map((breakdown) => (
@@ -290,9 +314,9 @@ export const MonitoringClient = () => {
                         <YAxis stroke="#64748b" tick={{ fontSize: 12 }} />
                         <Tooltip />
                         <Legend />
-                        <Bar dataKey="actual" fill="#0f766e" name="Actual" />
+                        <Bar dataKey="actual" fill="var(--brand-500)" name="Actual" />
                         {breakdown.slices.some((slice) => slice.plan !== undefined) && (
-                          <Bar dataKey="plan" fill="#14b8a6" name="Plan" />
+                          <Bar dataKey="plan" fill="var(--brand-300)" name="Plan" />
                         )}
                       </BarChart>
                     </ResponsiveContainer>
@@ -302,27 +326,27 @@ export const MonitoringClient = () => {
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="card p-6">
             <h2 className="text-lg font-semibold text-slate-900">Pacing vs caps</h2>
             <div className="mt-4 space-y-4 text-sm text-slate-600">
               <div>
                 <p className="font-semibold text-slate-700">Budget</p>
                 <div className="mt-2 h-2 rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-brand" style={{ width: `${Math.min(100, Math.round((pacing.budget.spend / pacing.budget.cap) * 100))}%` }} />
+                  <div className="h-full rounded-full bg-brand-500" style={{ width: `${Math.min(100, Math.round((pacing.budget.spend / pacing.budget.cap) * 100))}%` }} />
                 </div>
                 <p className="mt-1 text-xs text-slate-500">{currency.format(pacing.budget.spend)} of {currency.format(pacing.budget.cap)}</p>
               </div>
               <div>
                 <p className="font-semibold text-slate-700">Audience</p>
                 <div className="mt-2 h-2 rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-brand" style={{ width: `${Math.min(100, Math.round((pacing.audience.used / pacing.audience.cap) * 100))}%` }} />
+                  <div className="h-full rounded-full bg-brand-500" style={{ width: `${Math.min(100, Math.round((pacing.audience.used / pacing.audience.cap) * 100))}%` }} />
                 </div>
                 <p className="mt-1 text-xs text-slate-500">{pacing.audience.used.toLocaleString()} of {pacing.audience.cap.toLocaleString()}</p>
               </div>
               <div>
                 <p className="font-semibold text-slate-700">Impressions</p>
                 <div className="mt-2 h-2 rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-brand" style={{ width: `${Math.min(100, Math.round((pacing.impressions.used / pacing.impressions.cap) * 100))}%` }} />
+                  <div className="h-full rounded-full bg-brand-500" style={{ width: `${Math.min(100, Math.round((pacing.impressions.used / pacing.impressions.cap) * 100))}%` }} />
                 </div>
                 <p className="mt-1 text-xs text-slate-500">{pacing.impressions.used.toLocaleString()} of {pacing.impressions.cap.toLocaleString()}</p>
               </div>
@@ -331,7 +355,7 @@ export const MonitoringClient = () => {
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="card p-6">
         <h2 className="text-lg font-semibold text-slate-900">Funnel drop-off</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-4">
           {monitoringFunnel.map((step, index) => {
@@ -348,20 +372,29 @@ export const MonitoringClient = () => {
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="card p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Alerts</h2>
           <p className="text-xs uppercase tracking-wide text-slate-500">Threshold {filters.alertThreshold}%</p>
         </div>
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           {activeAlerts.map((alert) => (
-            <div key={alert.id} className={`rounded-lg border p-4 text-sm ${alert.severity === "critical" ? "border-rose-200 bg-rose-50 text-rose-700" : alert.severity === "warning" ? "border-amber-200 bg-amber-50 text-amber-700" : "border-slate-200 bg-slate-50 text-slate-600"}`}>
+            <div
+              key={alert.id}
+              className={`rounded-lg border p-4 text-sm ${
+                alert.severity === "critical"
+                  ? "border-rose-200 bg-rose-50 text-rose-700"
+                  : alert.severity === "warning"
+                  ? "border-amber-200 bg-amber-50 text-amber-700"
+                  : "border-slate-200 bg-slate-50 text-slate-600"
+              }`}
+            >
               <p className="font-semibold">{alert.message}</p>
               <p className="mt-2 text-xs text-slate-500">Metric: {alert.metric} · Actual {alert.actual} vs threshold {alert.threshold}</p>
               <button
                 type="button"
                 onClick={() => handleAcknowledgeAlert(alert)}
-                className="mt-3 rounded-md border border-brand px-3 py-2 text-xs font-semibold text-brand hover:bg-brand/10"
+                className="mt-3 rounded-md border border-brand-500 px-3 py-2 text-xs font-semibold text-brand-600 hover:bg-brand-50"
               >
                 Acknowledge
               </button>
